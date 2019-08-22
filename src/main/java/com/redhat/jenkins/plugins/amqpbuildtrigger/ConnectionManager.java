@@ -75,9 +75,9 @@ public class ConnectionManager implements JmsConnectionListener {
            // Find triggers for Pipelines/workflow jobs
             for (WorkflowJob j : jenkins.getAllItems(WorkflowJob.class)) {
                 Map<TriggerDescriptor, Trigger<?>> m = j.getTriggers();
-                for (TriggerDescriptor d: m.keySet()) {
-                    if (d instanceof AmqpBuildTrigger.AmqpBuildTriggerDescriptor) {
-                        AmqpBuildTrigger t = (AmqpBuildTrigger) m.get(d);
+                for (Map.Entry<TriggerDescriptor, Trigger<?>> entry: m.entrySet()) {
+                    if (entry.getKey() instanceof AmqpBuildTrigger.AmqpBuildTriggerDescriptor) {
+                        AmqpBuildTrigger t = (AmqpBuildTrigger) entry.getValue();
                         if (t != null) {
                             addBuildTrigger(t);
                         }

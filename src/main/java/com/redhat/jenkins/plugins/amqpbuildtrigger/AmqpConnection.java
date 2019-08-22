@@ -44,9 +44,7 @@ public class AmqpConnection {
                 !brokerParams.getUrl().equals(connection.getConnectedURI().toString().split("\\?")[0]) &&
                 !brokerParams.getUser().equals(connection.getUsername()) &&
                 !brokerParams.getPassword().getPlainText().equals(connection.getPassword())) {
-            if (connection != null) {
-                shutdown();
-            }
+            shutdown();
         }
         if (connection != null && connection.isConnected() == false) {
             shutdown();

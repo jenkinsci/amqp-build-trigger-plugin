@@ -29,6 +29,13 @@
         <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
     </scm>
+    <developers>
+        <developer>
+            <id>kpvdr</id>
+            <name>Kim van der Riet</name>
+            <email>kpvdr@apache.org</email>
+        </developer>
+    </developers>
     <repositories>
         <repository>
             <id>repo.jenkins-ci.org</id>

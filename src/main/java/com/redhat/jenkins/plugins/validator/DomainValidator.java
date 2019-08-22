@@ -1681,10 +1681,10 @@ public class DomainValidator {
 			"localhost",           // RFC2606 defined
 	};
 
-	private static volatile String[] countryCodeTLDsPlus = EMPTY_STRING_ARRAY;
-	private static volatile String[] genericTLDsPlus = EMPTY_STRING_ARRAY;
-	private static volatile String[] countryCodeTLDsMinus = EMPTY_STRING_ARRAY;
-	private static volatile String[] genericTLDsMinus = EMPTY_STRING_ARRAY;
+	private static final String[] countryCodeTLDsPlus = EMPTY_STRING_ARRAY;
+	private static final String[] genericTLDsPlus = EMPTY_STRING_ARRAY;
+	private static final String[] countryCodeTLDsMinus = EMPTY_STRING_ARRAY;
+	private static final String[] genericTLDsMinus = EMPTY_STRING_ARRAY;
 
 	/*
 	 * Converts potentially Unicode input to punycode.

@@ -156,7 +156,6 @@ public class AmqpBrokerParams implements Describable<AmqpBrokerParams> {
         public void onException(JMSException exception) {
             System.out.println("Connection ExceptionListener fired, exiting.");
             exception.printStackTrace(System.out);
-            System.exit(1);
         }
     }
 }
