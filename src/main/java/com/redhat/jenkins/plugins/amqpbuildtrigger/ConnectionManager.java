@@ -102,7 +102,7 @@ public class ConnectionManager implements JmsConnectionListener {
 
     @Override
     public void onConnectionEstablished(URI remoteURI) {
-        LOGGER.info(remoteURI + "Connection established");
+        LOGGER.info(remoteURI + ": Connection established");
     }
 
     @Override
