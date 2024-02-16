@@ -26,6 +26,39 @@ To add additional sources, click the **Add** button. To remove a source, click t
 
 Finally, click the **Save** button at the bottom of the form to save the settings. Once these settings are saved, a new connection to each server will be established and a listener will wait for messages.
 
+At AMQP message payload you can pass a JSONArray with the parameters to be mapped to the job
+parameters. The format is the following:
+
+```json
+[
+    {
+        "name": "PARAM1",
+        "value": "Value for PARAM1"
+    },
+    {
+        "name": "OTHER_PARAM",
+        "value": "Value for OTHER_PARAM"
+    }
+]
+```
+
+With that AMQP message payload, if the job to be triggered has the parameters `PARAM1` and `OTHER_PARAM`, then
+the parameters will be mapped whit the payload values.
+
+## Development
+You can modify this plugin easely into a Docker container with JDK and Maven. Just open a bash into 
+your container:
+
+```sh
+docker run -it --rm --platform=linux/amd64 -v $PWD:/work -w /work -p 8080:8080 -v maven:/root/.m2/ maven:3.9.6-eclipse-temurin-17 bash
+```
+
+Validate the code with `mvn validate`
+
+Test your plugin changes into an embebed Jenkins with `mvn hpi:run`, [more info](https://www.jenkins.io/doc/developer/tutorial/run/). TODO: fix
+
+Build your hpi to be installed onto your Jenkins with `mvn hpi:hpi`, [more info](https://jenkinsci.github.io/maven-hpi-plugin/).`
+
 **NOTE:** If you have the `qpid-cpp-client-devel` package installed, it is possible to test a configuration by quickly sending a trigger message using `qpid-send` through a broker as follows (and to which the trigger must be configured to listen):
 ```
 qpid-send [-b <broker-url>] -a <queue-name> -m1
