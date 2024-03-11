@@ -24,7 +24,10 @@ import net.sf.json.JSONObject;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 
+import java.util.logging.Logger;
+
 public class AmqpBuildTrigger<T extends Job<?, ?> & ParameterizedJobMixIn.ParameterizedJob> extends Trigger<T> {
+    private static final Logger LOGGER = Logger.getLogger(AmqpBuildTrigger.class.getName());
     private static final String KEY_PARAM_NAME = "name";
     private static final String KEY_PARAM_VALUE = "value";
     private static final String PLUGIN_NAME = "[AmqpBuildTrigger] - Trigger builds using AMQP 1.0 messages";
@@ -57,16 +60,29 @@ public class AmqpBuildTrigger<T extends Job<?, ?> & ParameterizedJobMixIn.Parame
         return "";
     }
 
-    public void scheduleBuild(String messageSource, JSONArray jsonArray) {
-        if (job != null) {
-          if (jsonArray != null) {
-              List<ParameterValue> parameters = getUpdatedParameters(jsonArray, getDefinitionParameters(job));
-              ParameterizedJobMixIn.scheduleBuild2(job, 0, new CauseAction(new RemoteBuildCause(messageSource)), new ParametersAction(parameters));
-          } else {
-              ParameterizedJobMixIn.scheduleBuild2(job, 0, new CauseAction(new RemoteBuildCause(messageSource)));
-          }
+    public void scheduleBuild(String messageSource, String message) {
+        if (job != null && messageSource != null) {
+            LOGGER.info("ScheduleBuild with message: " + message);
+            JSONArray jsonArray = convertStringToJSONArray(message);
+            if (jsonArray != null) {
+                LOGGER.info("Message in JSONArray format, converting to matching params ...");
+                List<ParameterValue> parameters = getUpdatedParameters(jsonArray, getDefinitionParameters(job));
+                ParameterizedJobMixIn.scheduleBuild2(job, 0, new CauseAction(new RemoteBuildCause(messageSource)), new ParametersAction(parameters));
+            } else {
+                LOGGER.info("Message NOT in JSONArray format");
+                ParameterizedJobMixIn.scheduleBuild2(job, 0, new CauseAction(new RemoteBuildCause(messageSource)));
+            }
         }
     }
+
+    // method to convert a string into a JSONArray
+    private JSONArray convertStringToJSONArray(String message) {
+        try {
+            return JSONArray.fromObject(message);
+        } catch (Exception e) {
+            return JSONArray.fromObject("[]");
+        }
+    } 
 
     private List<ParameterValue> getUpdatedParameters(JSONArray jsonParameters, List<ParameterValue> definedParameters) {
         List<ParameterValue> newParams = new CopyOnWriteArrayList<ParameterValue>();
@@ -78,17 +94,20 @@ public class AmqpBuildTrigger<T extends Job<?, ?> & ParameterizedJobMixIn.Parame
                 }
             }
         }
+        LOGGER.info("Params: " + newParams.toString());
         return newParams;
     }
 
     private List<ParameterValue> getDefinitionParameters(Job<?, ?> project) {
         List<ParameterValue> parameters = new CopyOnWriteArrayList<ParameterValue>();
-        ParametersDefinitionProperty properties = project.getProperty(ParametersDefinitionProperty.class);
-        if (properties != null) {
-            for (ParameterDefinition paramDef : properties.getParameterDefinitions()) {
-                ParameterValue param = paramDef.getDefaultParameterValue();
-                if (param != null) {
-                    parameters.add(param);
+        if (project != null) {
+            ParametersDefinitionProperty properties = project.getProperty(ParametersDefinitionProperty.class);
+            if (properties != null) {
+                for (ParameterDefinition paramDef : properties.getParameterDefinitions()) {
+                    ParameterValue param = paramDef.getDefaultParameterValue();
+                    if (param != null) {
+                        parameters.add(param);
+                    }
                 }
             }
         }
